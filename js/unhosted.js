@@ -1,21 +1,14 @@
 require(['./js/remoteStorage'], function(remoteStorage) {
 
-  function connect(userAddress) {
+  function connect(userAddress, callback) {
     // This function takes a user address ("user@host") and a callback as its
     // arguments. The callback will get an error code, and a `storageInfo`
     // object. If the error code is `null`, then the `storageInfo` object will
     // have some data fields in it that we will need later.
-    remoteStorage.getStorageInfo(userAddress, function(error, storageInfo) {
-      if(error) {
-        alert('No, sorry!');
-      } else {
-        alert('Yes! Look: ' + JSON.stringify(storageInfo));
-        localStorage.setItem('currUserStorageInfo', JSON.stringify(storageInfo));
-      }
-    });
+    remoteStorage.getStorageInfo(userAddress, callback);
   }
 
-  function getData(category, key) {
+  function getData(category, key, callback) {
     var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
     var client;
 
@@ -26,31 +19,15 @@ require(['./js/remoteStorage'], function(remoteStorage) {
       client = remoteStorage.createClient(storageInfo, category, token);
     }
 
-    client.get(key, function(error, data) {
-      if(error) {
-        alert('Could not find "' + key + '" in category "' + category + '" on the remoteStorage');
-      } else {
-        if (data == "null") {
-          alert('There wasn\'t anything for "' + key + '" in category "' + category + '"');
-        } else {
-          alert('We received this for key "' + key + '" in category "' + category + '": ' + data);
-        }
-      }
-    });
+    client.get(key, callback);
   }
 
-  function putData(category, key, value) {
+  function putData(category, key, value, callback) {
     var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
     var token = localStorage.getItem('bearerToken');
     var client = remoteStorage.createClient(storageInfo, category, token);
 
-    client.put(key, value, function(error) {
-      if (error) {
-        alert('Could not store "' + key + '" in "' + category + '" category');
-      } else {
-        alert('Stored "' + value + '" for key "' + key + '" in "' + category + '" category');
-      }
-    });
+    client.put(key, value, callback);
   }
 
   // Getting public data is easy because it requires no credentials. If we want
@@ -78,15 +55,52 @@ require(['./js/remoteStorage'], function(remoteStorage) {
 
   // Bind the UI elements to the actions
 
+  function showSpinner(id) {
+    document.getElementById(id).className = '';
+  }
+
+  function hideSpinner(id) {
+    document.getElementById(id).className = 'hidden';
+  }
+
   document.getElementById('userAddressForm').onsubmit = function() {
     var userAddress = document.getElementById('userAddress').value;
-    connect(userAddress);
+    showSpinner('connectionSpinner');
+
+    connect(userAddress, function(error, storageInfo) {
+      if(error) {
+        console.log('Could not load storage info');
+        console.log(error);
+      } else {
+        console.log('Storage info received:');
+        console.log(storageInfo);
+        localStorage.setItem('currUserStorageInfo', JSON.stringify(storageInfo));
+      }
+
+      hideSpinner('connectionSpinner');
+    });
+
     return false;
   }
 
   document.getElementById('fetchPublicKey').onclick = function() {
     var key = document.getElementById('publicKey').value;
-    getData('public', key);
+    showSpinner('fetchPublicSpinner');
+
+    getData('public', key, function(error, data) {
+      if(error) {
+        console.log('Could not find "' + key + '" in category "public" on the remoteStorage');
+        console.log(error);
+      } else {
+        if (data == "null") {
+          console.log('There wasn\'t anything for "' + key + '" in category "public"');
+        } else {
+          console.log('We received this for key "' + key + '" in category "public": ' + data);
+        }
+      }
+      hideSpinner('fetchPublicSpinner');
+    });
+
     return false;
   }
 
@@ -98,13 +112,38 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   document.getElementById('publish').onclick = function() {
     var key = document.getElementById('tutorialKey').value;
     var value = document.getElementById('tutorialValue').value;
-    putData('tutorial', key, value);
+    showSpinner('publishSpinner');
+
+    putData('tutorial', key, value, function(error) {
+      if (error) {
+        console.log('Could not store "' + key + '" in "tutorial" category');
+      } else {
+        console.log('Stored "' + value + '" for key "' + key + '" in "tutorial" category');
+      }
+      hideSpinner('publishSpinner');
+    });
+
     return false;
   }
 
   document.getElementById('fetchTutorialKey').onclick = function() {
     var key = document.getElementById('tutorialKey').value;
-    getData('tutorial', key);
+    showSpinner('fetchTutorialSpinner');
+
+    getData('tutorial', key, function(error, data) {
+      if(error) {
+        console.log('Could not find "' + key + '" in category "tutorial" on the remoteStorage');
+        console.log(error);
+      } else {
+        if (data == "null") {
+          console.log('There wasn\'t anything for "' + key + '" in category "tutorial"');
+        } else {
+          console.log('We received this for key "' + key + '" in category "tutorial": ' + data);
+        }
+      }
+      hideSpinner('fetchTutorialSpinner');
+    });
+
     return false;
   }
 });
