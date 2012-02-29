@@ -63,11 +63,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   function authorize(categories) {
     var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
     var redirectUri = location.protocol + '//' + location.host + '/receive_token.html';
-
-    // We specify that we want to connect to the user's "public" and "documents" categories.
     var oauthPage = remoteStorage.createOAuthAddress(storageInfo, categories, redirectUri);
-
-    // Then we open the popup window.
     var popup = window.open(oauthPage);
   }
 
@@ -95,20 +91,20 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   }
 
   document.getElementById('authorize').onclick = function() {
-    authorize(['public', 'documents']);
+    authorize(['public', 'tutorial']);
     return false;
   }
 
   document.getElementById('publish').onclick = function() {
-    var key = document.getElementById('documentsKey').value;
-    var value = document.getElementById('documentsValue').value;
-    putData('documents', key, value);
+    var key = document.getElementById('tutorialKey').value;
+    var value = document.getElementById('tutorialValue').value;
+    putData('tutorial', key, value);
     return false;
   }
 
-  document.getElementById('fetchDocumentsKey').onclick = function() {
-    var key = document.getElementById('documentsKey').value;
-    getData('documents', key);
+  document.getElementById('fetchTutorialKey').onclick = function() {
+    var key = document.getElementById('tutorialKey').value;
+    getData('tutorial', key);
     return false;
   }
 });
