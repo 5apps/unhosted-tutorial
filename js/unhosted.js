@@ -15,28 +15,40 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     });
   }
 
-  // To get public information from someone's remoteStorage, we use the
-  // `createClient` method to create a client, and on there call the `get`
-  // method to retrieve the information we want.
-  function getPublicData(key) {
+  function getData(category, key) {
     var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
+    var client;
 
-    // The `createClient` method takes the `storageInfo` that we got via the
-    // `connect` function, as well as the category we want to access.
-    var client = remoteStorage.createClient(storageInfo, 'public');
+    if (category === 'public') {
+      client = remoteStorage.createClient(storageInfo, 'public');
+    } else {
+      var token = localStorage.getItem('bearerToken');
+      client = remoteStorage.createClient(storageInfo, category, token);
+    }
 
-    // To retrieve data from the remoteStorage we specify a key and a callback
-    // to the `get` function.  When the `error` argument given to the callback
-    // is `null`, then `data` will contain the value of the requested key.
     client.get(key, function(error, data) {
       if(error) {
-        alert('Could not find "' + key + '" on the remoteStorage');
+        alert('Could not find "' + key + '" in category "' + category + '" on the remoteStorage');
       } else {
         if (data == "null") {
-          alert('There wasn\'t anything for "' + key + '" on the remoteStorage');
+          alert('There wasn\'t anything for "' + key + '" in category "' + category + '"');
         } else {
-          alert('We received this from the remoteStorage: ' + data);
+          alert('We received this for key "' + key + '" in category "' + category + '": ' + data);
         }
+      }
+    });
+  }
+
+  function putData(category, key, value) {
+    var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
+    var token = localStorage.getItem('bearerToken');
+    var client = remoteStorage.createClient(storageInfo, category, token);
+
+    client.put(key, value, function(error) {
+      if (error) {
+        alert('Could not store "' + key + '" in "' + category + '" category');
+      } else {
+        alert('Stored "' + value + '" for key "' + key + '" in "' + category + '" category');
       }
     });
   }
@@ -48,48 +60,15 @@ require(['./js/remoteStorage'], function(remoteStorage) {
 
   // Open a popup that sends the user to the OAuth dialog of the remoteStorage
   // provider.
-  function authorize() {
+  function authorize(categories) {
     var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
-
     var redirectUri = location.protocol + '//' + location.host + '/receive_token.html';
 
     // We specify that we want to connect to the user's "public" and "documents" categories.
-    var oauthPage = remoteStorage.createOAuthAddress(storageInfo, ['public', 'documents'], redirectUri);
+    var oauthPage = remoteStorage.createOAuthAddress(storageInfo, categories, redirectUri);
 
     // Then we open the popup window.
     var popup = window.open(oauthPage);
-  }
-
-  function publishDocumentsData(key, value) {
-    var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
-    var token = localStorage.getItem('bearerToken');
-    var documentsClient = remoteStorage.createClient(storageInfo, 'documents', token);
-
-    documentsClient.put(key, value, function(error) {
-      if (error) {
-        alert('Could not store "' + key + '" in "documents" category');
-      } else {
-        alert('Stored "' + value + '" for key "' + key + '" in "documents" category');
-      }
-    });
-  }
-
-  function getDocumentsData(key) {
-    var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
-    var token = localStorage.getItem('bearerToken');
-    var documentsClient = remoteStorage.createClient(storageInfo, 'documents', token);
-
-    documentsClient.get(key, function(error, data) {
-      if(error) {
-        alert('Could not find "' + key + '" on the remoteStorage');
-      } else {
-        if (data == "null") {
-          alert('There wasn\'t anything for "' + key + '" on the remoteStorage');
-        } else {
-          alert('We received this from the remoteStorage: ' + data);
-        }
-      }
-    });
   }
 
   // Listen for the `message` event from the receive_token.html that sends the
@@ -109,28 +88,27 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     return false;
   }
 
-  document.getElementById('fetch').onclick = function() {
+  document.getElementById('fetchPublicKey').onclick = function() {
     var key = document.getElementById('publicKey').value;
-    getPublicData(key);
+    getData('public', key);
     return false;
   }
 
   document.getElementById('authorize').onclick = function() {
-    authorize();
+    authorize(['public', 'documents']);
     return false;
   }
 
   document.getElementById('publish').onclick = function() {
     var key = document.getElementById('documentsKey').value;
     var value = document.getElementById('documentsValue').value;
-    publishDocumentsData(key, value);
+    putData('documents', key, value);
     return false;
   }
 
   document.getElementById('fetchDocumentsKey').onclick = function() {
     var key = document.getElementById('documentsKey').value;
-    getDocumentsData(key);
+    getData('documents', key);
     return false;
   }
-
 });
