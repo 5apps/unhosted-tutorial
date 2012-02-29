@@ -1,4 +1,4 @@
-require(['./js/remoteStorage.js'], function(remoteStorage) {
+require(['./js/remoteStorage'], function(remoteStorage) {
 
   function connect(userAddress) {
     // This function takes a user address ("user@host") and a callback as its
@@ -66,7 +66,29 @@ require(['./js/remoteStorage.js'], function(remoteStorage) {
     var documentsClient = remoteStorage.createClient(storageInfo, 'documents', token);
 
     documentsClient.put(key, value, function(error) {
-      alert('Stored "' + value + '" for key "' + key + '" in "documents" category');
+      if (error) {
+        alert('Could not store "' + key + '" in "documents" category');
+      } else {
+        alert('Stored "' + value + '" for key "' + key + '" in "documents" category');
+      }
+    });
+  }
+
+  function getDocumentsData(key) {
+    var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
+    var token = localStorage.getItem('bearerToken');
+    var documentsClient = remoteStorage.createClient(storageInfo, 'documents', token);
+
+    documentsClient.get(key, function(error, data) {
+      if(error) {
+        alert('Could not find "' + key + '" on the remoteStorage');
+      } else {
+        if (data == "null") {
+          alert('There wasn\'t anything for "' + key + '" on the remoteStorage');
+        } else {
+          alert('We received this from the remoteStorage: ' + data);
+        }
+      }
     });
   }
 
@@ -74,6 +96,7 @@ require(['./js/remoteStorage.js'], function(remoteStorage) {
   // OAuth token.
   window.addEventListener('message', function(event) {
     if(event.origin == location.protocol +'//'+ location.host) {
+      console.log('Received an OAuth token: ' + event.data);
       localStorage.setItem('bearerToken', event.data);
     }
   }, false);
@@ -101,6 +124,12 @@ require(['./js/remoteStorage.js'], function(remoteStorage) {
     var key = document.getElementById('documentsKey').value;
     var value = document.getElementById('documentsValue').value;
     publishDocumentsData(key, value);
+    return false;
+  }
+
+  document.getElementById('fetchDocumentsKey').onclick = function() {
+    var key = document.getElementById('documentsKey').value;
+    getDocumentsData(key);
     return false;
   }
 

@@ -18,24 +18,31 @@
       <input type="submit" value="Connect to remoteStorage" />
     </form>
 
+    <h2>Read access for the "public" category</h2>
     <p>
       <label for="publicKey">Key:</label>
       <input type="text" id="publicKey" size="20" value="foo" />
       <input type="submit" id="fetch" value="Fetch data" />
     </p>
 
+    <h2>Read/write access for "documents" category</h2>
     <p>
       <p>
         <input type="submit" id="authorize" value="Authorize access" />
       </p>
 
-      <label for="documentsKey">Key:</label>
-      <input type="text" id="documentsKey" size="20" value="bar" />
+      <p>
+        <label for="documentsKey">Key:</label>
+        <input type="text" id="documentsKey" size="20" value="bar" />
+      </p>
 
-      <label for="docuementsValue">Value:</label>
-      <input type="text" id="documentsValue" size="50" value="baz" />
+      <p>
+        <label for="docuementsValue">Value:</label>
+        <input type="text" id="documentsValue" size="50" value="baz" />
+      </p>
 
       <input type="submit" id="publish" value="Push data" />
+      <input type="submit" id="fetchDocumentsKey" value="Fetch data" />
     </p>
   </body>
 </html>
