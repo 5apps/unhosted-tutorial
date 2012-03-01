@@ -60,11 +60,11 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   // Helper functions
 
   function showSpinner(id) {
-    document.getElementById(id).className = '';
+    $('#' + id).show();
   }
 
   function hideSpinner(id) {
-    document.getElementById(id).className = 'hidden';
+    $('#' + id).hide();
   }
 
   function setConnectionState(state) {
@@ -76,28 +76,28 @@ require(['./js/remoteStorage'], function(remoteStorage) {
 
     if (connected) {
       for (var i = 0; i < elementIds.length; i++) {
-        document.getElementById(elementIds[i]).disabled = null;
+        $('#' + elementIds[i]).removeAttr('disabled');
       }
-      document.getElementById('connectionState').innerHTML = 'connected';
-      document.getElementById('connectionState').className = 'enabled';
-      document.getElementById('connect').className = 'hidden';
-      document.getElementById('disconnect').className = '';
+      $('#connectionState').html('connected');
+      $('#connect').hide();
+      $('#disconnect').show();
     } else {
       for (var i = 0; i < elementIds.length; i++) {
-        document.getElementById(elementIds[i]).disabled = 'disabled';
+        $('#' + elementIds[i]).attr('disabled', 'disabled');
       }
-      document.getElementById('connectionState').innerHTML = 'disconnected';
-      document.getElementById('connectionState').className = 'disabled';
-      document.getElementById('connect').className = '';
-      document.getElementById('disconnect').className = 'hidden';
+      $('#connectionState').html('disconnected');
+      $('#connect').show();
+      $('#disconnect').hide();
       deauthorize();
     }
+    $('#connectionState').toggleClass('enabled', connected);
 
-    document.getElementById('states').className = '';
+    $('#states').show();
   }
 
   function disconnect() {
     localStorage.removeItem('userStorageInfo');
+    localStorage.removeItem('userAddress', userAddress);
     setConnectionState(false);
   }
 
@@ -115,23 +115,22 @@ require(['./js/remoteStorage'], function(remoteStorage) {
 
     if (authorized) {
       for (var i = 0; i < elementIds.length; i++) {
-        document.getElementById(elementIds[i]).disabled = null;
+        $('#' + elementIds[i]).removeAttr('disabled');
       }
-      document.getElementById('publicTitle').innerHTML = 'Read/write access for "public" category';
-      document.getElementById('authorizedState').innerHTML = 'authorized';
-      document.getElementById('authorizedState').className = 'enabled';
-      document.getElementById('authorize').className = 'hidden';
-      document.getElementById('deauthorize').className = '';
+      $('#publicTitle').html('Read/write access for "public" category');
+      $('#authorizedState').html('authorized');
+      $('#authorize').hide();
+      $('#deauthorize').show();
     } else {
       for (var i = 0; i < elementIds.length; i++) {
-        document.getElementById(elementIds[i]).disabled = 'disabled';
+        $('#' + elementIds[i]).attr('disabled', 'disabled');
       }
-      document.getElementById('publicTitle').innerHTML = 'Read access for "public" category';
-      document.getElementById('authorizedState').innerHTML = 'not authorized';
-      document.getElementById('authorizedState').className = 'disabled';
-      document.getElementById('authorize').className = '';
-      document.getElementById('deauthorize').className = 'hidden';
+      $('#publicTitle').html('Read access for "public" category');
+      $('#authorizedState').html('not authorized');
+      $('#authorize').show();
+      $('#deauthorize').hide();
     }
+    $('#authorizedState').toggleClass('enabled', authorized);
   }
 
   function deauthorize() {
@@ -144,129 +143,134 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   }
 
   // Bind the UI elements to the actions
+  $(function() {
 
-  document.getElementById('connect').onclick = function() {
-    var userAddress = document.getElementById('userAddress').value;
+    $('#connect').on('click', function() {
+      var userAddress = $('#userAddress').val();
 
-    showSpinner('connectionSpinner');
+      showSpinner('connectionSpinner');
 
-    connect(userAddress, function(error, storageInfo) {
-      if(error) {
-        console.log('Could not load storage info');
-        console.log(error);
-        setConnectionState(false);
-      } else {
-        console.log('Storage info received:');
-        console.log(storageInfo);
-        localStorage.setItem('userStorageInfo', JSON.stringify(storageInfo));
-        setConnectionState(true);
-      }
-
-      hideSpinner('connectionSpinner');
-    });
-
-    return false;
-  }
-
-  document.getElementById('fetchPublicKey').onclick = function() {
-    var key = document.getElementById('publicKey').value;
-
-    showSpinner('fetchPublicSpinner');
-
-    getData('public', key, function(error, data) {
-      if(error) {
-        console.log('Could not find "' + key + '" in category "public" on the remoteStorage');
-        console.log(error);
-      } else {
-        if (data == "null") {
-          console.log('There wasn\'t anything for "' + key + '" in category "public"');
+      connect(userAddress, function(error, storageInfo) {
+        if(error) {
+          console.log('Could not load storage info');
+          console.log(error);
+          setConnectionState(false);
         } else {
-          console.log('We received this for key "' + key + '" in category "public": ' + data);
+          console.log('Storage info received:');
+          console.log(storageInfo);
+          localStorage.setItem('userStorageInfo', JSON.stringify(storageInfo));
+          localStorage.setItem('userAddress', userAddress);
+          setConnectionState(true);
         }
-      }
 
-      hideSpinner('fetchPublicSpinner');
+        hideSpinner('connectionSpinner');
+      });
+
+      return false;
     });
 
-    return false;
-  }
+    $('#fetchPublicKey').on('click', function() {
+      var key = $('publicKey').val();
 
-  document.getElementById('publishPublic').onclick = function() {
-    var key = document.getElementById('publicKey').value;
-    var value = document.getElementById('publicValue').value;
+      showSpinner('fetchPublicSpinner');
 
-    showSpinner('publishPublicSpinner');
-
-    putData('public', key, value, function(error) {
-      if (error) {
-        console.log('Could not store "' + key + '" in "public" category');
-      } else {
-        console.log('Stored "' + value + '" for key "' + key + '" in "public" category');
-      }
-
-      hideSpinner('publishPublicSpinner');
-    });
-
-    return false;
-  }
-
-  document.getElementById('authorize').onclick = function() {
-    authorize(['public', 'tutorial']);
-    return false;
-  }
-
-  document.getElementById('publishTutorial').onclick = function() {
-    var key = document.getElementById('tutorialKey').value;
-    var value = document.getElementById('tutorialValue').value;
-
-    showSpinner('publishTutorialSpinner');
-
-    putData('tutorial', key, value, function(error) {
-      if (error) {
-        console.log('Could not store "' + key + '" in "tutorial" category');
-      } else {
-        console.log('Stored "' + value + '" for key "' + key + '" in "tutorial" category');
-      }
-
-      hideSpinner('publishTutorialSpinner');
-    });
-
-    return false;
-  }
-
-  document.getElementById('fetchTutorialKey').onclick = function() {
-    var key = document.getElementById('tutorialKey').value;
-
-    showSpinner('fetchTutorialSpinner');
-
-    getData('tutorial', key, function(error, data) {
-      if(error) {
-        console.log('Could not find "' + key + '" in category "tutorial" on the remoteStorage');
-        console.log(error);
-      } else {
-        if (data == "null") {
-          console.log('There wasn\'t anything for "' + key + '" in category "tutorial"');
+      getData('public', key, function(error, data) {
+        if(error) {
+          console.log('Could not find "' + key + '" in category "public" on the remoteStorage');
+          console.log(error);
         } else {
-          console.log('We received this for key "' + key + '" in category "tutorial": ' + data);
+          if (data == "null") {
+            console.log('There wasn\'t anything for "' + key + '" in category "public"');
+          } else {
+            console.log('We received this for key "' + key + '" in category "public": ' + data);
+          }
         }
-      }
 
-      hideSpinner('fetchTutorialSpinner');
+        hideSpinner('fetchPublicSpinner');
+      });
+
+      return false;
     });
 
-    return false;
-  }
+    $('#publishPublic').on('click', function() {
+      var key = $('#publicKey').val();
+      var value = $('#publicValue').val();
 
-  document.getElementById('disconnect').onclick = function() {
-    disconnect();
-    return false;
-  }
+      showSpinner('publishPublicSpinner');
 
-  document.getElementById('deauthorize').onclick = function() {
-    deauthorize();
-    return false;
-  }
+      putData('public', key, value, function(error) {
+        if (error) {
+          console.log('Could not store "' + key + '" in "public" category');
+        } else {
+          console.log('Stored "' + value + '" for key "' + key + '" in "public" category');
+        }
 
-  setConnectionState(isConnected());
-  setAuthorizedState(isAuthorized());
+        hideSpinner('publishPublicSpinner');
+      });
+
+      return false;
+    });
+
+    $('#authorize').on('click', function() {
+      authorize(['public', 'tutorial']);
+      return false;
+    });
+
+    $('#publishTutorial').on('click', function() {
+      var key = $('tutorialKey').val();
+      var value = $('tutorialValue').val();
+
+      showSpinner('publishTutorialSpinner');
+
+      putData('tutorial', key, value, function(error) {
+        if (error) {
+          console.log('Could not store "' + key + '" in "tutorial" category');
+        } else {
+          console.log('Stored "' + value + '" for key "' + key + '" in "tutorial" category');
+        }
+
+        hideSpinner('publishTutorialSpinner');
+      });
+
+      return false;
+    });
+
+    $('#fetchTutorialKey').on('click', function() {
+      var key = $('tutorialKey').val();
+
+      showSpinner('fetchTutorialSpinner');
+
+      getData('tutorial', key, function(error, data) {
+        if(error) {
+          console.log('Could not find "' + key + '" in category "tutorial" on the remoteStorage');
+          console.log(error);
+        } else {
+          if (data == "null") {
+            console.log('There wasn\'t anything for "' + key + '" in category "tutorial"');
+          } else {
+            console.log('We received this for key "' + key + '" in category "tutorial": ' + data);
+          }
+        }
+
+        hideSpinner('fetchTutorialSpinner');
+      });
+
+      return false;
+    });
+
+    $('#disconnect').on('click', function() {
+      disconnect();
+      return false;
+    });
+
+    $('#deauthorize').on('click', function() {
+      deauthorize();
+      return false;
+    });
+
+    // Initializers
+
+    setConnectionState(isConnected());
+    setAuthorizedState(isAuthorized());
+  });
 });

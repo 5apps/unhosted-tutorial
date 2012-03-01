@@ -43,9 +43,6 @@ section#public_storage {
 
 #states span {
   padding: 5px;
-}
-
-#states span.disabled {
   color: #c66;
 }
 
