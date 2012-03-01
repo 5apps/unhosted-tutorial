@@ -81,6 +81,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
       $('#connectionState').html('connected');
       $('#connect').hide();
       $('#disconnect').show();
+      $('#userAddress').val(localStorage.getItem('userAddress'));
     } else {
       for (var i = 0; i < elementIds.length; i++) {
         $('#' + elementIds[i]).attr('disabled', 'disabled');
@@ -88,6 +89,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
       $('#connectionState').html('disconnected');
       $('#connect').show();
       $('#disconnect').hide();
+      $('#userAddress').val('');
       deauthorize();
     }
     $('#connectionState').toggleClass('enabled', connected);
@@ -170,7 +172,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     });
 
     $('#fetchPublicKey').on('click', function() {
-      var key = $('publicKey').val();
+      var key = $('#publicKey').val();
 
       showSpinner('fetchPublicSpinner');
 
@@ -183,6 +185,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
             console.log('There wasn\'t anything for "' + key + '" in category "public"');
           } else {
             console.log('We received this for key "' + key + '" in category "public": ' + data);
+            $('#publicValue').val(data);
           }
         }
 
@@ -203,6 +206,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
           console.log('Could not store "' + key + '" in "public" category');
         } else {
           console.log('Stored "' + value + '" for key "' + key + '" in "public" category');
+          $('#publicValue').val('');
         }
 
         hideSpinner('publishPublicSpinner');
@@ -217,8 +221,8 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     });
 
     $('#publishTutorial').on('click', function() {
-      var key = $('tutorialKey').val();
-      var value = $('tutorialValue').val();
+      var key = $('#tutorialKey').val();
+      var value = $('#tutorialValue').val();
 
       showSpinner('publishTutorialSpinner');
 
@@ -227,6 +231,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
           console.log('Could not store "' + key + '" in "tutorial" category');
         } else {
           console.log('Stored "' + value + '" for key "' + key + '" in "tutorial" category');
+          $('#tutorialValue').val('');
         }
 
         hideSpinner('publishTutorialSpinner');
@@ -236,7 +241,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     });
 
     $('#fetchTutorialKey').on('click', function() {
-      var key = $('tutorialKey').val();
+      var key = $('#tutorialKey').val();
 
       showSpinner('fetchTutorialSpinner');
 
@@ -249,6 +254,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
             console.log('There wasn\'t anything for "' + key + '" in category "tutorial"');
           } else {
             console.log('We received this for key "' + key + '" in category "tutorial": ' + data);
+            $('#tutorialValue').val(data);
           }
         }
 
