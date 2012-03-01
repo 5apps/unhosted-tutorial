@@ -1,7 +1,4 @@
-require(['./js/remoteStorage'], function(remoteStorage) {
-  var connected = false;
-  var authorized = false;
-
+require(['./js/remoteStorage', './js/helper'], function(remoteStorage, helper) {
   function connect(userAddress, callback) {
     // `getStorageInfo` takes a user address ("user@host") and a callback as
     // its arguments. The callback will get an error code, and a `storageInfo`
@@ -52,97 +49,10 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     if(event.origin == location.protocol +'//'+ location.host) {
       console.log('Received an OAuth token: ' + event.data);
       localStorage.setItem('bearerToken', event.data);
-      setAuthorizedState(true);
+      helper.setAuthorizedState(true);
     }
   }, false);
 
-
-  // Helper functions
-
-  function showSpinner(id) {
-    $('#' + id).show();
-  }
-
-  function hideSpinner(id) {
-    $('#' + id).hide();
-  }
-
-  function setConnectionState(state) {
-    connected = state;
-
-    elementIds = [
-      'publicKey', 'fetchPublicKey', 'authorize', 'disconnect'
-    ];
-
-    if (connected) {
-      for (var i = 0; i < elementIds.length; i++) {
-        $('#' + elementIds[i]).removeAttr('disabled');
-      }
-      $('#connectionState').html('connected');
-      $('#connect').hide();
-      $('#disconnect').show();
-      $('#userAddress').val(localStorage.getItem('userAddress'));
-    } else {
-      for (var i = 0; i < elementIds.length; i++) {
-        $('#' + elementIds[i]).attr('disabled', 'disabled');
-      }
-      $('#connectionState').html('disconnected');
-      $('#connect').show();
-      $('#disconnect').hide();
-      $('#userAddress').val('');
-      deauthorize();
-    }
-    $('#connectionState').toggleClass('enabled', connected);
-
-    $('#states').show();
-  }
-
-  function disconnect() {
-    localStorage.removeItem('userStorageInfo');
-    localStorage.removeItem('userAddress', userAddress);
-    setConnectionState(false);
-  }
-
-  function isConnected() {
-    return localStorage.getItem('userStorageInfo') != null;
-  }
-
-  function setAuthorizedState(state) {
-    authorized = state;
-
-    elementIds = [
-      'tutorialKey', 'fetchTutorialKey', 'tutorialValue',
-      'publishTutorial', 'publicValue', 'publishPublic', 'deauthorize'
-    ];
-
-    if (authorized) {
-      for (var i = 0; i < elementIds.length; i++) {
-        $('#' + elementIds[i]).removeAttr('disabled');
-      }
-      $('#publicTitle').html('Read/write access for "public" category');
-      $('#authorizedState').html('authorized');
-      $('#authorize').hide();
-      $('#deauthorize').show();
-    } else {
-      for (var i = 0; i < elementIds.length; i++) {
-        $('#' + elementIds[i]).attr('disabled', 'disabled');
-      }
-      $('#publicTitle').html('Read access for "public" category');
-      $('#authorizedState').html('not authorized');
-      $('#authorize').show();
-      $('#deauthorize').hide();
-    }
-    $('#authorizedState').toggleClass('enabled', authorized);
-  }
-
-  function deauthorize() {
-    localStorage.removeItem('bearerToken');
-    setAuthorizedState(false);
-  }
-
-  function isAuthorized() {
-    return localStorage.getItem('bearerToken') != null;
-  }
 
   // Bind the UI elements to the actions
   $(function() {
@@ -150,22 +60,22 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     $('#connect').on('click', function() {
       var userAddress = $('#userAddress').val();
 
-      showSpinner('connectionSpinner');
+      helper.showSpinner('connectionSpinner');
 
       connect(userAddress, function(error, storageInfo) {
         if(error) {
           console.log('Could not load storage info');
           console.log(error);
-          setConnectionState(false);
+          helper.setConnectionState(false);
         } else {
           console.log('Storage info received:');
           console.log(storageInfo);
           localStorage.setItem('userStorageInfo', JSON.stringify(storageInfo));
           localStorage.setItem('userAddress', userAddress);
-          setConnectionState(true);
+          helper.setConnectionState(true);
         }
 
-        hideSpinner('connectionSpinner');
+        helper.hideSpinner('connectionSpinner');
       });
 
       return false;
@@ -174,7 +84,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     $('#fetchPublicKey').on('click', function() {
       var key = $('#publicKey').val();
 
-      showSpinner('fetchPublicSpinner');
+      helper.showSpinner('fetchPublicSpinner');
 
       getData('public', key, function(error, data) {
         if(error) {
@@ -189,7 +99,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
           }
         }
 
-        hideSpinner('fetchPublicSpinner');
+        helper.hideSpinner('fetchPublicSpinner');
       });
 
       return false;
@@ -199,7 +109,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
       var key = $('#publicKey').val();
       var value = $('#publicValue').val();
 
-      showSpinner('publishPublicSpinner');
+      helper.showSpinner('publishPublicSpinner');
 
       putData('public', key, value, function(error) {
         if (error) {
@@ -209,7 +119,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
           $('#publicValue').val('');
         }
 
-        hideSpinner('publishPublicSpinner');
+        helper.hideSpinner('publishPublicSpinner');
       });
 
       return false;
@@ -224,7 +134,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
       var key = $('#tutorialKey').val();
       var value = $('#tutorialValue').val();
 
-      showSpinner('publishTutorialSpinner');
+      helper.showSpinner('publishTutorialSpinner');
 
       putData('tutorial', key, value, function(error) {
         if (error) {
@@ -234,7 +144,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
           $('#tutorialValue').val('');
         }
 
-        hideSpinner('publishTutorialSpinner');
+        helper.hideSpinner('publishTutorialSpinner');
       });
 
       return false;
@@ -243,7 +153,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     $('#fetchTutorialKey').on('click', function() {
       var key = $('#tutorialKey').val();
 
-      showSpinner('fetchTutorialSpinner');
+      helper.showSpinner('fetchTutorialSpinner');
 
       getData('tutorial', key, function(error, data) {
         if(error) {
@@ -258,25 +168,25 @@ require(['./js/remoteStorage'], function(remoteStorage) {
           }
         }
 
-        hideSpinner('fetchTutorialSpinner');
+        helper.hideSpinner('fetchTutorialSpinner');
       });
 
       return false;
     });
 
     $('#disconnect').on('click', function() {
-      disconnect();
+      helper.disconnect();
       return false;
     });
 
     $('#deauthorize').on('click', function() {
-      deauthorize();
+      helper.deauthorize();
       return false;
     });
 
     // Initializers
 
-    setConnectionState(isConnected());
-    setAuthorizedState(isAuthorized());
+    helper.setConnectionState(helper.isConnected());
+    helper.setAuthorizedState(helper.isAuthorized());
   });
 });
