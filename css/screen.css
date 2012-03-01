@@ -58,11 +58,16 @@ label {
 }
 
 input[type='text'] {
-  width: 220px;
+  width: 180px;
   font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding: 3px 4px;
   margin-right: 5px;
 }
+
+#connect input[type='text'] {
+  width: 250px;
+}
+
 
 .hidden {
   display: none;
