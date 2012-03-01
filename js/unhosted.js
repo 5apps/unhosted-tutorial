@@ -106,17 +106,19 @@ require(['./js/remoteStorage'], function(remoteStorage) {
 
     elementIds = [
       'tutorialKey', 'fetchTutorialKey', 'tutorialValue',
-      'publish', 'deauthorize'
+      'publishTutorial', 'publicValue', 'publishPublic', 'deauthorize'
     ];
 
     if (authorized) {
       for (var i = 0; i < elementIds.length; i++) {
         document.getElementById(elementIds[i]).disabled = null;
       }
+      document.getElementById('publicTitle').innerHTML = 'Read/write access for "public" category';
     } else {
       for (var i = 0; i < elementIds.length; i++) {
         document.getElementById(elementIds[i]).disabled = 'disabled';
       }
+      document.getElementById('publicTitle').innerHTML = 'Read access for "public" category';
     }
   }
 
@@ -179,16 +181,35 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     return false;
   }
 
+  document.getElementById('publishPublic').onclick = function() {
+    var key = document.getElementById('publicKey').value;
+    var value = document.getElementById('publicValue').value;
+
+    showSpinner('publishPublicSpinner');
+
+    putData('public', key, value, function(error) {
+      if (error) {
+        console.log('Could not store "' + key + '" in "public" category');
+      } else {
+        console.log('Stored "' + value + '" for key "' + key + '" in "public" category');
+      }
+
+      hideSpinner('publishPublicSpinner');
+    });
+
+    return false;
+  }
+
   document.getElementById('authorize').onclick = function() {
     authorize(['public', 'tutorial']);
     return false;
   }
 
-  document.getElementById('publish').onclick = function() {
+  document.getElementById('publishTutorial').onclick = function() {
     var key = document.getElementById('tutorialKey').value;
     var value = document.getElementById('tutorialValue').value;
 
-    showSpinner('publishSpinner');
+    showSpinner('publishTutorialSpinner');
 
     putData('tutorial', key, value, function(error) {
       if (error) {
@@ -197,7 +218,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
         console.log('Stored "' + value + '" for key "' + key + '" in "tutorial" category');
       }
 
-      hideSpinner('publishSpinner');
+      hideSpinner('publishTutorialSpinner');
     });
 
     return false;
