@@ -24,6 +24,8 @@
           <input type="text" id="userAddress" placeholder="yourusername@5apps.com" />
           <input type="submit" id="connect" value="Connect to remoteStorage" />
           <input type="submit" id="disconnect" value="Disconnect" class="hidden" />
+          <input type="submit" id="authorize" value="Authorize access" />
+          <input type="submit" id="deauthorize" value="Deauthorize access" class="hidden" />
           <img src="images/spinner.gif" id="connectionSpinner" class="hidden" />
         </p>
       </section>
@@ -48,10 +50,6 @@
 
       <section id="private_storage">
         <h2>Read/write access for "tutorial" category</h2>
-        <p>
-          <input type="submit" id="authorize" value="Authorize access" />
-          <input type="submit" id="deauthorize" value="Deauthorize access" class="hidden" />
-        </p>
         <p>
           <label for="tutorialKey">Key:</label>
           <input type="text" id="tutorialKey" value="bar" />
