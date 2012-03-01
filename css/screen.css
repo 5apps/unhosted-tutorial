@@ -12,6 +12,10 @@ body {
   background: #efefef
 }
 
+a {
+  color: #527dff;
+}
+
 .container {
   width: 810px;
   margin: 0 auto;
@@ -23,6 +27,11 @@ section {
   background: #fff;
   padding: 20px 25px 5px 25px;
   margin-bottom: 10px;
+}
+
+section#intro {
+  background: #f6f6f6;
+  width: 810px;
 }
 
 section#connection {
