@@ -13,6 +13,11 @@
       <h1>remoteStorage.js Tutorial</h1>
 
       <section id="connection">
+        <div id="states" class="hidden">
+          <span id="connectionState" class="disabled">disconnected</span> |
+          <span id="authorizedState" class="disabled">not authorized</span>
+        </div>
+
         <p>
           <label for="userAddress">Your user address:</label>
           <input type="text" id="userAddress" value="yourusername@5apps.com" />

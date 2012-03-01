@@ -27,10 +27,30 @@ section {
 
 section#connection {
   width: 810px;
+  position: relative;
 }
 
 section#public_storage {
   margin-right: 10px;
+}
+
+#states {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  color: #666;
+}
+
+#states span {
+  padding: 5px;
+}
+
+#states span.disabled {
+  color: #c66;
+}
+
+#states span.enabled {
+  color: #6c6;
 }
 
 h1, h2, h3, h4 {

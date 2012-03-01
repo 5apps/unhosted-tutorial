@@ -80,16 +80,22 @@ require(['./js/remoteStorage'], function(remoteStorage) {
       for (var i = 0; i < elementIds.length; i++) {
         document.getElementById(elementIds[i]).disabled = null;
       }
+      document.getElementById('connectionState').innerHTML = 'connected';
+      document.getElementById('connectionState').className = 'enabled';
       document.getElementById('connect').className = 'hidden';
       document.getElementById('disconnect').className = '';
     } else {
       for (var i = 0; i < elementIds.length; i++) {
         document.getElementById(elementIds[i]).disabled = 'disabled';
       }
+      document.getElementById('connectionState').innerHTML = 'disconnected';
+      document.getElementById('connectionState').className = 'disabled';
       document.getElementById('connect').className = '';
       document.getElementById('disconnect').className = 'hidden';
       deauthorize();
     }
+
+    document.getElementById('states').className = '';
   }
 
   function disconnect() {
@@ -118,6 +124,8 @@ require(['./js/remoteStorage'], function(remoteStorage) {
         document.getElementById(elementIds[i]).disabled = null;
       }
       document.getElementById('publicTitle').innerHTML = 'Read/write access for "public" category';
+      document.getElementById('authorizedState').innerHTML = 'authorized';
+      document.getElementById('authorizedState').className = 'enabled';
       document.getElementById('authorize').className = 'hidden';
       document.getElementById('deauthorize').className = '';
     } else {
@@ -125,6 +133,8 @@ require(['./js/remoteStorage'], function(remoteStorage) {
         document.getElementById(elementIds[i]).disabled = 'disabled';
       }
       document.getElementById('publicTitle').innerHTML = 'Read access for "public" category';
+      document.getElementById('authorizedState').innerHTML = 'not authorized';
+      document.getElementById('authorizedState').className = 'disabled';
       document.getElementById('authorize').className = '';
       document.getElementById('deauthorize').className = 'hidden';
     }
