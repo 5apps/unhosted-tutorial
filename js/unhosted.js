@@ -5,7 +5,17 @@ define(['./remoteStorage', './helper'], function(remoteStorage, helper) {
   // object. If the error code is `null`, then the `storageInfo` object will
   // contain data required to access the remoteStorage.
   function connect(userAddress, callback) {
-    remoteStorage.getStorageInfo(userAddress, callback);
+    remoteStorage.getStorageInfo(userAddress, function(error, storageInfo) {
+      if(error) {
+        alert('Could not load storage info');
+        console.log(error);
+      } else {
+        console.log('Storage info received:');
+        console.log(storageInfo);
+      }
+
+      callback(error, storageInfo);
+    });
   }
 
   // Getting data from the "public" category doesn't require any credentials.
@@ -55,7 +65,20 @@ define(['./remoteStorage', './helper'], function(remoteStorage, helper) {
 
     // The client's `get` method takes a key and a callback. The callback will
     // be invoked with an error code and the data.
-    client.get(key, callback);
+    client.get(key, function(error, data) {
+      if(error) {
+        alert('Could not find "' + key + '" in category "' + category + '" on the remoteStorage');
+        console.log(error);
+      } else {
+        if (data == "null") {
+          console.log('There wasn\'t anything for "' + key + '" in category "' + category + '"');
+        } else {
+          console.log('We received this for key "' + key + '" in category "' + category + '": ' + data);
+        }
+      }
+
+      callback(error, data);
+    });
   }
 
   // For saving data we use the client's `put` method. It takes a key, the
@@ -66,7 +89,13 @@ define(['./remoteStorage', './helper'], function(remoteStorage, helper) {
     var token = localStorage.getItem('bearerToken');
     var client = remoteStorage.createClient(storageInfo, category, token);
 
-    client.put(key, value, callback);
+    client.put(key, value, function(error) {
+      if (error) {
+        alert('Could not store "' + key + '" in "' + category + '" category');
+      } else {
+        console.log('Stored "' + value + '" for key "' + key + '" in "' + category + '" category');
+      }
+    });
   }
 
   return {

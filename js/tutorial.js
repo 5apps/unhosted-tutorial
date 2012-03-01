@@ -9,12 +9,8 @@ require(['./js/unhosted', './js/helper'], function(unhosted, helper) {
 
       unhosted.connect(userAddress, function(error, storageInfo) {
         if(error) {
-          alert('Could not load storage info');
-          console.log(error);
           helper.setConnectionState(false);
         } else {
-          console.log('Storage info received:');
-          console.log(storageInfo);
           localStorage.setItem('userStorageInfo', JSON.stringify(storageInfo));
           localStorage.setItem('userAddress', userAddress);
           helper.setConnectionState(true);
@@ -32,16 +28,8 @@ require(['./js/unhosted', './js/helper'], function(unhosted, helper) {
       helper.showSpinner('fetchPublicSpinner');
 
       unhosted.getData('public', key, function(error, data) {
-        if(error) {
-          alert('Could not find "' + key + '" in category "public" on the remoteStorage');
-          console.log(error);
-        } else {
-          if (data == "null") {
-            console.log('There wasn\'t anything for "' + key + '" in category "public"');
-          } else {
-            console.log('We received this for key "' + key + '" in category "public": ' + data);
-            $('#publicValue').val(data);
-          }
+        if(!error && data != "null") {
+          $('#publicValue').val(data);
         }
 
         helper.hideSpinner('fetchPublicSpinner');
@@ -57,10 +45,7 @@ require(['./js/unhosted', './js/helper'], function(unhosted, helper) {
       helper.showSpinner('publishPublicSpinner');
 
       unhosted.putData('public', key, value, function(error) {
-        if (error) {
-          alert('Could not store "' + key + '" in "public" category');
-        } else {
-          console.log('Stored "' + value + '" for key "' + key + '" in "public" category');
+        if (!error) {
           $('#publicValue').val('');
         }
 
@@ -82,10 +67,7 @@ require(['./js/unhosted', './js/helper'], function(unhosted, helper) {
       helper.showSpinner('publishTutorialSpinner');
 
       unhosted.putData('tutorial', key, value, function(error) {
-        if (error) {
-          alert('Could not store "' + key + '" in "tutorial" category');
-        } else {
-          console.log('Stored "' + value + '" for key "' + key + '" in "tutorial" category');
+        if (!error) {
           $('#tutorialValue').val('');
         }
 
@@ -101,16 +83,8 @@ require(['./js/unhosted', './js/helper'], function(unhosted, helper) {
       helper.showSpinner('fetchTutorialSpinner');
 
       unhosted.getData('tutorial', key, function(error, data) {
-        if(error) {
-          alert('Could not find "' + key + '" in category "tutorial" on the remoteStorage');
-          console.log(error);
-        } else {
-          if (data == "null") {
-            console.log('There wasn\'t anything for "' + key + '" in category "tutorial"');
-          } else {
-            console.log('We received this for key "' + key + '" in category "tutorial": ' + data);
-            $('#tutorialValue').val(data);
-          }
+        if(!error && data !== "null") {
+          $('#tutorialValue').val(data);
         }
 
         helper.hideSpinner('fetchTutorialSpinner');
