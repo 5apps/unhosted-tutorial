@@ -64,7 +64,7 @@ require(['./js/remoteStorage', './js/helper'], function(remoteStorage, helper) {
 
       connect(userAddress, function(error, storageInfo) {
         if(error) {
-          console.log('Could not load storage info');
+          alert('Could not load storage info');
           console.log(error);
           helper.setConnectionState(false);
         } else {
@@ -88,7 +88,7 @@ require(['./js/remoteStorage', './js/helper'], function(remoteStorage, helper) {
 
       getData('public', key, function(error, data) {
         if(error) {
-          console.log('Could not find "' + key + '" in category "public" on the remoteStorage');
+          alert('Could not find "' + key + '" in category "public" on the remoteStorage');
           console.log(error);
         } else {
           if (data == "null") {
@@ -113,7 +113,7 @@ require(['./js/remoteStorage', './js/helper'], function(remoteStorage, helper) {
 
       putData('public', key, value, function(error) {
         if (error) {
-          console.log('Could not store "' + key + '" in "public" category');
+          alert('Could not store "' + key + '" in "public" category');
         } else {
           console.log('Stored "' + value + '" for key "' + key + '" in "public" category');
           $('#publicValue').val('');
@@ -138,7 +138,7 @@ require(['./js/remoteStorage', './js/helper'], function(remoteStorage, helper) {
 
       putData('tutorial', key, value, function(error) {
         if (error) {
-          console.log('Could not store "' + key + '" in "tutorial" category');
+          alert('Could not store "' + key + '" in "tutorial" category');
         } else {
           console.log('Stored "' + value + '" for key "' + key + '" in "tutorial" category');
           $('#tutorialValue').val('');
@@ -157,7 +157,7 @@ require(['./js/remoteStorage', './js/helper'], function(remoteStorage, helper) {
 
       getData('tutorial', key, function(error, data) {
         if(error) {
-          console.log('Could not find "' + key + '" in category "tutorial" on the remoteStorage');
+          alert('Could not find "' + key + '" in category "tutorial" on the remoteStorage');
           console.log(error);
         } else {
           if (data == "null") {
