@@ -1,15 +1,17 @@
 require(['./js/remoteStorage'], function(remoteStorage) {
+  var connected = false;
+  var authorized = false;
 
   function connect(userAddress, callback) {
-    // This function takes a user address ("user@host") and a callback as its
-    // arguments. The callback will get an error code, and a `storageInfo`
+    // `getStorageInfo` takes a user address ("user@host") and a callback as
+    // its arguments. The callback will get an error code, and a `storageInfo`
     // object. If the error code is `null`, then the `storageInfo` object will
     // have some data fields in it that we will need later.
     remoteStorage.getStorageInfo(userAddress, callback);
   }
 
   function getData(category, key, callback) {
-    var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
+    var storageInfo = JSON.parse(localStorage.getItem('userStorageInfo'));
     var client;
 
     if (category === 'public') {
@@ -23,7 +25,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   }
 
   function putData(category, key, value, callback) {
-    var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
+    var storageInfo = JSON.parse(localStorage.getItem('userStorageInfo'));
     var token = localStorage.getItem('bearerToken');
     var client = remoteStorage.createClient(storageInfo, category, token);
 
@@ -38,7 +40,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   // Open a popup that sends the user to the OAuth dialog of the remoteStorage
   // provider.
   function authorize(categories) {
-    var storageInfo = JSON.parse(localStorage.getItem('currUserStorageInfo'));
+    var storageInfo = JSON.parse(localStorage.getItem('userStorageInfo'));
     var redirectUri = location.protocol + '//' + location.host + '/receive_token.html';
     var oauthPage = remoteStorage.createOAuthAddress(storageInfo, categories, redirectUri);
     var popup = window.open(oauthPage);
@@ -50,10 +52,12 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     if(event.origin == location.protocol +'//'+ location.host) {
       console.log('Received an OAuth token: ' + event.data);
       localStorage.setItem('bearerToken', event.data);
+      setAuthorizedState(true);
     }
   }, false);
 
-  // Bind the UI elements to the actions
+
+  // Helper functions
 
   function showSpinner(id) {
     document.getElementById(id).className = '';
@@ -63,18 +67,87 @@ require(['./js/remoteStorage'], function(remoteStorage) {
     document.getElementById(id).className = 'hidden';
   }
 
+  function setConnectionState(state) {
+    if (connected != state)
+      console.log('Switching connection state to ' + state);
+    connected = state;
+
+    elementIds = [
+      'publicKey', 'fetchPublicKey', 'authorize', 'disconnect'
+    ];
+
+    if (connected) {
+      for (var i = 0; i < elementIds.length; i++) {
+        document.getElementById(elementIds[i]).disabled = null;
+      }
+    } else {
+      for (var i = 0; i < elementIds.length; i++) {
+        document.getElementById(elementIds[i]).disabled = 'disabled';
+      }
+      deauthorize();
+    }
+  }
+
+  function disconnect() {
+    localStorage.removeItem('userStorageInfo');
+    setConnectionState(false);
+  }
+
+  function isConnected() {
+    state = localStorage.getItem('userStorageInfo') != null;
+    console.log('Current connection state: ' + state);
+    return state;
+  }
+
+  function setAuthorizedState(state) {
+    if (authorized != state)
+      console.log('Switching authorized state to ' + state);
+    authorized = state;
+
+    elementIds = [
+      'tutorialKey', 'fetchTutorialKey', 'tutorialValue',
+      'publish', 'deauthorize'
+    ];
+
+    if (authorized) {
+      for (var i = 0; i < elementIds.length; i++) {
+        document.getElementById(elementIds[i]).disabled = null;
+      }
+    } else {
+      for (var i = 0; i < elementIds.length; i++) {
+        document.getElementById(elementIds[i]).disabled = 'disabled';
+      }
+    }
+  }
+
+  function deauthorize() {
+    localStorage.removeItem('bearerToken');
+    setAuthorizedState(false);
+  }
+
+  function isAuthorized() {
+    state = localStorage.getItem('bearerToken') != null;
+    console.log('Current authorized state: ' + state);
+    return state;
+  }
+
+  // Bind the UI elements to the actions
+
   document.getElementById('userAddressForm').onsubmit = function() {
     var userAddress = document.getElementById('userAddress').value;
+
     showSpinner('connectionSpinner');
 
     connect(userAddress, function(error, storageInfo) {
       if(error) {
         console.log('Could not load storage info');
         console.log(error);
+        setConnectionState(false);
       } else {
         console.log('Storage info received:');
         console.log(storageInfo);
-        localStorage.setItem('currUserStorageInfo', JSON.stringify(storageInfo));
+        localStorage.setItem('userStorageInfo', JSON.stringify(storageInfo));
+        setConnectionState(true);
       }
 
       hideSpinner('connectionSpinner');
@@ -85,6 +158,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
 
   document.getElementById('fetchPublicKey').onclick = function() {
     var key = document.getElementById('publicKey').value;
+
     showSpinner('fetchPublicSpinner');
 
     getData('public', key, function(error, data) {
@@ -98,6 +172,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
           console.log('We received this for key "' + key + '" in category "public": ' + data);
         }
       }
+
       hideSpinner('fetchPublicSpinner');
     });
 
@@ -112,6 +187,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   document.getElementById('publish').onclick = function() {
     var key = document.getElementById('tutorialKey').value;
     var value = document.getElementById('tutorialValue').value;
+
     showSpinner('publishSpinner');
 
     putData('tutorial', key, value, function(error) {
@@ -120,6 +196,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
       } else {
         console.log('Stored "' + value + '" for key "' + key + '" in "tutorial" category');
       }
+
       hideSpinner('publishSpinner');
     });
 
@@ -128,6 +205,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
 
   document.getElementById('fetchTutorialKey').onclick = function() {
     var key = document.getElementById('tutorialKey').value;
+
     showSpinner('fetchTutorialSpinner');
 
     getData('tutorial', key, function(error, data) {
@@ -141,9 +219,23 @@ require(['./js/remoteStorage'], function(remoteStorage) {
           console.log('We received this for key "' + key + '" in category "tutorial": ' + data);
         }
       }
+
       hideSpinner('fetchTutorialSpinner');
     });
 
     return false;
   }
+
+  document.getElementById('disconnect').onclick = function() {
+    disconnect();
+    return false;
+  }
+
+  document.getElementById('deauthorize').onclick = function() {
+    deauthorize();
+    return false;
+  }
+
+  setConnectionState(isConnected());
+  setAuthorizedState(isAuthorized());
 });

@@ -13,7 +13,6 @@
       <h1>remoteStorage.js Tutorial</h1>
 
       <section id="connect">
-        <!-- <h2>Get storage info</h2> -->
         <form id="userAddressForm" action="">
           <p>
             <label for="userAddress">Your user address:</label>
@@ -22,6 +21,7 @@
             <img src="images/spinner.gif" id="connectionSpinner" class="hidden" />
           </p>
         </form>
+        <input type="submit" value="Disconnect" id="disconnect" />
       </section>
 
       <section id="public_storage">
@@ -29,7 +29,7 @@
         <p>
           <label for="publicKey">Key:</label>
           <input type="text" id="publicKey" value="foo" />
-          <input type="submit" id="fetchPublicKey" value="Fetch data" />
+          <input type="submit" id="fetchPublicKey" value="Fetch" />
           <img src="images/spinner.gif" id="fetchPublicSpinner" class="hidden" />
         </p>
       </section>
@@ -40,9 +40,12 @@
           <input type="submit" id="authorize" value="Authorize access" />
         </p>
         <p>
+          <input type="submit" id="deauthorize" value="Deauthorize access" />
+        </p>
+        <p>
           <label for="tutorialKey">Key:</label>
           <input type="text" id="tutorialKey" value="bar" />
-          <input type="submit" id="fetchTutorialKey" value="Fetch data" />
+          <input type="submit" id="fetchTutorialKey" value="Fetch" />
           <img src="images/spinner.gif" id="fetchTutorialSpinner" class="hidden" />
         </p>
         <p>
@@ -50,7 +53,7 @@
           <input type="text" id="tutorialValue" value="baz" />
         </p>
         <p>
-          <input type="submit" id="publish" value="Push data" />
+          <input type="submit" id="publish" value="Save" />
           <img src="images/spinner.gif" id="publishSpinner" class="hidden" />
         </p>
       </section>
