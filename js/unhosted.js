@@ -68,8 +68,6 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   }
 
   function setConnectionState(state) {
-    if (connected != state)
-      console.log('Switching connection state to ' + state);
     connected = state;
 
     elementIds = [
@@ -104,14 +102,10 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   }
 
   function isConnected() {
-    state = localStorage.getItem('userStorageInfo') != null;
-    console.log('Current connection state: ' + state);
-    return state;
+    return localStorage.getItem('userStorageInfo') != null;
   }
 
   function setAuthorizedState(state) {
-    if (authorized != state)
-      console.log('Switching authorized state to ' + state);
     authorized = state;
 
     elementIds = [
@@ -146,9 +140,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   }
 
   function isAuthorized() {
-    state = localStorage.getItem('bearerToken') != null;
-    console.log('Current authorized state: ' + state);
-    return state;
+    return localStorage.getItem('bearerToken') != null;
   }
 
   // Bind the UI elements to the actions
