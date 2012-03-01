@@ -80,10 +80,14 @@ require(['./js/remoteStorage'], function(remoteStorage) {
       for (var i = 0; i < elementIds.length; i++) {
         document.getElementById(elementIds[i]).disabled = null;
       }
+      document.getElementById('connect').className = 'hidden';
+      document.getElementById('disconnect').className = '';
     } else {
       for (var i = 0; i < elementIds.length; i++) {
         document.getElementById(elementIds[i]).disabled = 'disabled';
       }
+      document.getElementById('connect').className = '';
+      document.getElementById('disconnect').className = 'hidden';
       deauthorize();
     }
   }
@@ -114,11 +118,15 @@ require(['./js/remoteStorage'], function(remoteStorage) {
         document.getElementById(elementIds[i]).disabled = null;
       }
       document.getElementById('publicTitle').innerHTML = 'Read/write access for "public" category';
+      document.getElementById('authorize').className = 'hidden';
+      document.getElementById('deauthorize').className = '';
     } else {
       for (var i = 0; i < elementIds.length; i++) {
         document.getElementById(elementIds[i]).disabled = 'disabled';
       }
       document.getElementById('publicTitle').innerHTML = 'Read access for "public" category';
+      document.getElementById('authorize').className = '';
+      document.getElementById('deauthorize').className = 'hidden';
     }
   }
 
@@ -135,7 +143,7 @@ require(['./js/remoteStorage'], function(remoteStorage) {
 
   // Bind the UI elements to the actions
 
-  document.getElementById('userAddressForm').onsubmit = function() {
+  document.getElementById('connect').onclick = function() {
     var userAddress = document.getElementById('userAddress').value;
 
     showSpinner('connectionSpinner');

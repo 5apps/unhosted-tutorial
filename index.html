@@ -12,16 +12,14 @@
     <div class="container">
       <h1>remoteStorage.js Tutorial</h1>
 
-      <section id="connect">
-        <form id="userAddressForm" action="">
-          <p>
-            <label for="userAddress">Your user address:</label>
-            <input type="text" id="userAddress" value="yourusername@5apps.com" />
-            <input type="submit" value="Connect to remoteStorage" />
-            <img src="images/spinner.gif" id="connectionSpinner" class="hidden" />
-          </p>
-        </form>
-        <input type="submit" value="Disconnect" id="disconnect" />
+      <section id="connection">
+        <p>
+          <label for="userAddress">Your user address:</label>
+          <input type="text" id="userAddress" value="yourusername@5apps.com" />
+          <input type="submit" id="connect" value="Connect to remoteStorage" />
+          <input type="submit" id="disconnect" value="Disconnect" class="hidden" />
+          <img src="images/spinner.gif" id="connectionSpinner" class="hidden" />
+        </p>
       </section>
 
       <section id="public_storage">
@@ -46,9 +44,7 @@
         <h2>Read/write access for "tutorial" category</h2>
         <p>
           <input type="submit" id="authorize" value="Authorize access" />
-        </p>
-        <p>
-          <input type="submit" id="deauthorize" value="Deauthorize access" />
+          <input type="submit" id="deauthorize" value="Deauthorize access" class="hidden" />
         </p>
         <p>
           <label for="tutorialKey">Key:</label>
