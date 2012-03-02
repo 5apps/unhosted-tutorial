@@ -1,4 +1,4 @@
-require(['./js/tutorial', './js/helper'], function(unhosted, helper) {
+require(['./js/tutorial', './js/helper'], function(storage, helper) {
 
   $(function() {
 
@@ -7,7 +7,7 @@ require(['./js/tutorial', './js/helper'], function(unhosted, helper) {
 
       helper.showSpinner('connectionSpinner');
 
-      unhosted.connect(userAddress, function(error, storageInfo) {
+      storage.connect(userAddress, function(error, storageInfo) {
         if(error) {
           helper.setConnectionState(false);
         } else {
@@ -27,7 +27,7 @@ require(['./js/tutorial', './js/helper'], function(unhosted, helper) {
 
       helper.showSpinner('fetchPublicSpinner');
 
-      unhosted.getData('public', key, function(error, data) {
+      storage.getData('public', key, function(error, data) {
         if(!error && data != "null") {
           $('#publicValue').val(data);
         }
@@ -44,7 +44,7 @@ require(['./js/tutorial', './js/helper'], function(unhosted, helper) {
 
       helper.showSpinner('publishPublicSpinner');
 
-      unhosted.putData('public', key, value, function(error) {
+      storage.putData('public', key, value, function(error) {
         if (!error) {
           $('#publicValue').val('');
         }
@@ -56,7 +56,7 @@ require(['./js/tutorial', './js/helper'], function(unhosted, helper) {
     });
 
     $('#authorize').on('click', function() {
-      unhosted.authorize(['public', 'tutorial']);
+      storage.authorize(['public', 'tutorial']);
       return false;
     });
 
@@ -66,7 +66,7 @@ require(['./js/tutorial', './js/helper'], function(unhosted, helper) {
 
       helper.showSpinner('publishTutorialSpinner');
 
-      unhosted.putData('tutorial', key, value, function(error) {
+      storage.putData('tutorial', key, value, function(error) {
         if (!error) {
           $('#tutorialValue').val('');
         }
@@ -82,7 +82,7 @@ require(['./js/tutorial', './js/helper'], function(unhosted, helper) {
 
       helper.showSpinner('fetchTutorialSpinner');
 
-      unhosted.getData('tutorial', key, function(error, data) {
+      storage.getData('tutorial', key, function(error, data) {
         if(!error && data !== "null") {
           $('#tutorialValue').val(data);
         }

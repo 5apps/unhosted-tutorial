@@ -72,6 +72,8 @@ which is <code>null</code> on success.</p>             </td>             <td cla
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
         <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Stored &quot;&#39;</span> <span class="o">+</span> <span class="nx">value</span> <span class="o">+</span> <span class="s1">&#39;&quot; for key &quot;&#39;</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="s1">&#39;&quot; in &quot;&#39;</span> <span class="o">+</span> <span class="nx">category</span> <span class="o">+</span> <span class="s1">&#39;&quot; category&#39;</span><span class="p">);</span>
       <span class="p">}</span>
+
+      <span class="nx">callback</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
     <span class="p">});</span>
   <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Now all that's left is to bind the events from the different UI
 elements to these actions, as can be seen <a href="app.html">here</a>.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="k">return</span> <span class="p">{</span>
