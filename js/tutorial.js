@@ -98,6 +98,8 @@ define(['./remoteStorage', './helper'], function(remoteStorage, helper) {
       } else {
         console.log('Stored "' + value + '" for key "' + key + '" in "' + category + '" category');
       }
+
+      callback(error);
     });
   }
 
