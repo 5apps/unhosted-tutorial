@@ -103,8 +103,8 @@ define(['./remoteStorage', './helper'], function(remoteStorage, helper) {
     });
   }
 
-  // Now all that's left is to bind the events from the different UI
-  // elements to these actions, as can be seen [here](app.html).
+  // Now all that's left is to bind the events from the UI elements to
+  // these actions, as can be seen [here](app.html).
 
   return {
     connect:   connect,
