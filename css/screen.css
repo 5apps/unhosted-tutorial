@@ -41,6 +41,10 @@ section#intro {
   width: 810px;
 }
 
+section#intro p {
+  line-height: 1.5em;
+}
+
 section#connection {
   width: 810px;
   position: relative;
