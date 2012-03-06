@@ -95,6 +95,7 @@ define(['./remoteStorage', './helper'], function(remoteStorage, helper) {
     client.put(key, value, function(error) {
       if (error) {
         alert('Could not store "' + key + '" in "' + category + '" category');
+        console.log(error);
       } else {
         console.log('Stored "' + value + '" for key "' + key + '" in "' + category + '" category');
       }
