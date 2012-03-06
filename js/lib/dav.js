@@ -15,11 +15,16 @@ define(['./ajax'], function(ajax) {
         url: key,
         method: method,
         error: function(err) {
-          cb(err, null);
+          if(err == 404) {
+            cb(null, undefined);
+          } else {
+            cb(err, null);
+          }
         },
         success: function(data) {
           cb(null, data);
-        }
+        },
+        timeout: 3000
       }
 
       ajaxObj.headers = {

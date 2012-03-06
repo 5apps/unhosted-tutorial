@@ -14,11 +14,16 @@ define(['./ajax'], function(ajax) {
         url: key,
         method: method,
         error: function(err) {
-          cb(err, null);
+          if(err == 404) {
+            cb(null, undefined);
+          } else {
+            cb(err, null);
+          }
         },
         success: function(data) {
           cb(null, data);
-        }
+        },
+        timeout: 3000
       };
       if(token) {
         ajaxObj.headers= {Authorization: 'Bearer '+token};
@@ -61,7 +66,8 @@ define(['./ajax'], function(ajax) {
       });
     }
     function delete_(storageAddress, token, key, cb) {
-      doCall('DELETE', storageAddress+normalizeKey(key), null, token, cb);
+      var revision = localStorage.getItem('_shadowCouchRev_'+key);
+      doCall('DELETE', storageAddress+normalizeKey(key)+'?rev='+revision, null, token, cb);
     }
     return {
       get: get,
