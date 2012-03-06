@@ -73,7 +73,7 @@ define(['./remoteStorage', './helper'], function(remoteStorage, helper) {
         alert('Could not find "' + key + '" in category "' + category + '" on the remoteStorage');
         console.log(error);
       } else {
-        if (data == "null") {
+        if (data == undefined) {
           console.log('There wasn\'t anything for "' + key + '" in category "' + category + '"');
         } else {
           console.log('We received this for key "' + key + '" in category "' + category + '": ' + data);
