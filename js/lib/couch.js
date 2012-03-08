@@ -1,10 +1,12 @@
 define(['./ajax'], function(ajax) {
-    var shadoCouchRev;
+    var shadowCouchRev=null;
     function getShadowCouchRev(key) {
       if(!shadowCouchRev) {
         try {
           shadowCouchRev=JSON.parse(localStorage.getItem('_shadowCouchRev'));
         } catch(e) {
+        }
+        if(!shadowCouchRev) {
           shadowCouchRev={};
         }
       }
@@ -19,7 +21,7 @@ define(['./ajax'], function(ajax) {
         }
       }
       shadowCouchRev[key]=rev;
-      localStoragelsetItem('_shadowCouchRev', JSON.stringify(shadowCouchRev));
+      localStorage.setItem('_shadowCouchRev', JSON.stringify(shadowCouchRev));
     }
     function normalizeKey(key) {
       var i = 0;
@@ -61,9 +63,19 @@ define(['./ajax'], function(ajax) {
         if(err) {
           cb(err, data);
         } else {
-          var obj = JSON.parse(data);
-          setShadowCouchRev(key, obj._rev);
-          cb(null, obj.value);
+          var obj;
+          try {
+            obj = JSON.parse(data);
+          } catch(e) {
+          }
+          if(obj && obj._rev) {
+            setShadowCouchRev(key, obj._rev);
+            cb(null, obj.value);
+          } else if(typeof(data) == 'undefined') {
+            cb(null, undefined);
+          } else {
+            cb('unparsable data from couch');
+          }
         }
       });
     }
@@ -109,8 +121,12 @@ define(['./ajax'], function(ajax) {
             cb(err);
           }
         } else {
-          var obj = JSON.parse(data);
-          if(obj.rev) {
+          var obj;
+          try {
+            obj = JSON.parse(data);
+          } catch(e) {
+          }
+          if(obj && obj.rev) {
             setShadowCouchRev(key, obj.rev);
           }
           cb(null);
@@ -119,7 +135,7 @@ define(['./ajax'], function(ajax) {
     }
     function delete_(storageAddress, token, key, cb) {
       var revision = getShadowCouchRev(key);
-      doCall('DELETE', storageAddress+normalizeKey(key)+'?rev='+revision, null, token, function(err, data) {
+      doCall('DELETE', storageAddress+normalizeKey(key)+(revision?'?rev='+revision:''), null, token, function(err, data) {
         if(err==409) {
           doCall('GET', storageAddress+normalizeKey(key), null, token, function(err2, data2) {
             if(err2) {
