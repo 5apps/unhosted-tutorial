@@ -38,7 +38,7 @@ define(function() {
 
   function disconnect() {
     localStorage.removeItem('userStorageInfo');
-    localStorage.removeItem('userAddress', userAddress);
+    localStorage.removeItem('userAddress');
     setConnectionState(false);
   }
 
