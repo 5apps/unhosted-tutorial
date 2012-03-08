@@ -36,43 +36,46 @@ define(
         var storageAddress = webfinger.resolveTemplate(storageInfo.template, category);
         return {
           get: function (key, cb) {
-            getDriver(storageInfo.api, function (d) {
-              d.get(storageAddress, token, key, cb);
-            });
+            if(typeof('key') != 'string') {
+              cb('argument "key" should be a string');
+            } else {
+              getDriver(storageInfo.api, function (d) {
+                d.get(storageAddress, token, key, cb);
+              });
+            }
           },
           put: function (key, value, cb) {
-            getDriver(storageInfo.api, function (d) {
-              d.put(storageAddress, token, key, value, cb);
-            });
+            if(typeof('key') != 'string') {
+              cb('argument "key" should be a string');
+            } else if(typeof('value') != 'string') {
+              cb('argument "value" should be a string');
+            } else {
+              getDriver(storageInfo.api, function (d) {
+                d.put(storageAddress, token, key, value, cb);
+              });
+            }
           },
           'delete': function (key, cb) {
-            getDriver(storageInfo.api, function (d) {
-              d['delete'](storageAddress, token, key, cb);
-            });
+            if(typeof('key') != 'string') {
+              cb('argument "key" should be a string');
+            } else {
+              getDriver(storageInfo.api, function (d) {
+                d['delete'](storageAddress, token, key, cb);
+              });
+            }
           }
         };
       },
       receiveToken = function () {
         var params, kv;
-        /**
-          this needs more attention.
-        **/
         if(location.hash.length > 0) {
           params = location.hash.split('&');
           for(var i = 0; i < params.length; i++) {
-            if(params[i].length && params[i][0] === '#') {
+            if(params[i][0]=='#') {
               params[i] = params[i].substring(1);
             }
-            kv = params[i].split('=');
-            if(kv.length >= 2) {
-              if(kv[0]==='access_token') {
-                ///XXX: ok im guessing its a base64 string and you somehow adding an = sign to the end of it ok, why?
-                var token = unescape(kv[1]);//unescaping is needed in chrome, otherwise you get %3D%3D at the end instead of ==
-                for(var i = 2; i < kv.length; i++) {
-                  token += '='+kv[i];
-                }
-                return token;
-              }
+            if(params[i].substring(0, 'access_token='.length)=='access_token=') {
+              return params[i].substring('access_token='.length);
             }
           }
         }
@@ -86,4 +89,3 @@ define(
     receiveToken       : receiveToken
   };
 });
-
