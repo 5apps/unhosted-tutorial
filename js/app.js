@@ -1,4 +1,4 @@
-require(['./js/tutorial', './js/helper'], function(storage, helper) {
+(function(storage, helper) {
 
   $(function() {
 
@@ -107,4 +107,4 @@ require(['./js/tutorial', './js/helper'], function(storage, helper) {
     helper.setAuthorizedState(helper.isAuthorized());
   });
 
-});
+})(tutorial, helper);
