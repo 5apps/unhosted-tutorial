@@ -1,4 +1,4 @@
-require(['./js/remoteStorage'], function(remoteStorage) {
+(function() {
   // `receiveToken` parses the OAuth token from the URL params
   var token = remoteStorage.receiveToken();
 
@@ -6,4 +6,4 @@ require(['./js/remoteStorage'], function(remoteStorage) {
   window.opener.postMessage(token, location.protocol+'//'+location.host);
   // and close the window.
   window.close();
-});
+})();
