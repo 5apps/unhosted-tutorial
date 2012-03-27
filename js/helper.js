@@ -1,4 +1,4 @@
-define(function() {
+var helper = (function() {
   var connected = false;
   var authorized = false;
 
@@ -98,4 +98,4 @@ define(function() {
     showSpinner:        showSpinner,
     hideSpinner:        hideSpinner
   };
-});
+})();
